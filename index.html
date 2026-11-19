@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Filmterest</title>
+
+    <!-- 1. Bootstrap 5 CSS (Düzen ve Izgara Yapısı İçin) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+
+
+    <!-- 2. FontAwesome İkonları (Arama, Yıldız, Çark Simgeleri İçin) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+
+    <!-- 3. Kendi Özel Stil Dosyamız -->
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+<body class="text-white">
+
+
+
+
+    <!-- NAVIGASYON MENÜSÜ (NAVBAR)-->
+    <nav class="navbar navbar-expand-lg sticky-top custom-navbar">
+        <div class="container-fluid px-4">
+
+            <!-- Filmterest Logosu-->
+            <a class="navbar-brand logo-text me-4" href="#">
+                <i class="fa-solid fa-film me-2 text-purple"></i>Filmterest
+            </a>
+
+            <!-- Menü Linkleri Listesi -->
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#" id="homeLink">
+                        <i class="fa-solid fa-house me-1"></i>
+                        Ana Sayfa</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" id="savedMoviesLink"><i
+                            class="fa-solid fa-bookmark me-1"></i>Kaydedilenler</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" id="watchedMoviesLink"><i
+                            class="fa-solid fa-eye me-1"></i>İzlediklerim</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" id="wheelLink"><i class="fa-solid fa-dice me-1"></i>Film Çarkı</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" id="communityLink">
+                        <i class="fa-solid fa-users me-1 text-purple"></i>Topluluk
+                    </a>
+                </li>
+
+            </ul>
+
+
+
+            <!-- Sağ Taraf: Arama Çubuğu ve Giriş Yap / Kayıt Ol Butonu -->
+            <div class="d-flex align-items-center gap-3">
+
+                <!-- Arama Çubuğu -->
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass search-icon "></i>
+                    <input type="text" id="searchInput" class="form-control custom-search"
+                        placeholder="Film veya dizi ara...">
+                </div>
+
+                <!-- Giriş Yap / Kayıt Ol Butonu -->
+                <button class="btn btn-purple px-3" id="authBtn" data-bs-toggle="modal" data-bs-target="#authModal">
+                    <i class="fa-solid fa-user me-1"></i> Giriş Yap / Kayıt Ol
+                </button>
+
+                <!-- Kullanıcı Profil Menüsü (Giriş Yapılınca Açılır) -->
+                <div class="dropdown d-none" id="userDropdown">
+                    <button
+                        class="btn user-profile-btn border-purple rounded-pill px-3 py-1 d-flex align-items-center gap-2"
+                        type="button" data-bs-toggle="dropdown">
+                        <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Felix" id="navUserAvatar"
+                            class="rounded-circle" style="width: 28px; height: 28px; object-fit: cover;">
+                        <span id="navUserName" class="text-white small fw-bold text-truncate"
+                            style="max-width: 100px;">Profilim</span>
+                        <i class="fa-solid fa-chevron-down small text-muted"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end custom-genre-dropdown shadow">
+                        <li><a class="dropdown-item py-2" href="#" data-bs-toggle="modal"
+                                data-bs-target="#profileModal"><i
+                                    class="fa-solid fa-user-gear me-2 text-purple"></i>Hesabım</a></li>
+                        <li>
+                            <hr class="dropdown-divider border-secondary my-1">
+                        </li>
+                        <li><a class="dropdown-item py-2 text-danger" href="#" id="dropdownLogoutBtn"><i
+                                    class="fa-solid fa-right-from-bracket me-2"></i>Çıkış Yap</a></li>
+                    </ul>
+                </div>
+
+            </div>
+
+        </div>
+    </nav>
+
+
+
+    <!-- KATEGORİ VE TÜR FİLTRE ÇUBUĞU (CATEGORY & GENRE BAR) -->
+    <div class="category-bar py-3 px-4 d-flex align-items-center justify-content-between flex-wrap gap-2">
+
+        <!-- Sol Taraf: İçerik Tipi Butonları -->
+        <div class="d-flex align-items-center gap-2 flex-wrap" id="contentTypeButtons">
+            <button class="btn btn-category active" data-type="all"> <!--active başta seçili olmasını sağlar-->
+                <i class="fa-solid fa-fire me-1"></i> Tümü
+            </button>
+            <button class="btn btn-category" data-type="movie">
+                <i class="fa-solid fa-film me-1"></i> Film
+            </button>
+            <button class="btn btn-category" data-type="tv">
+                <i class="fa-solid fa-tv me-1"></i> Dizi
+            </button>
+        </div>
+
+        <!-- Sağ Taraf: Türler Dropdown Butonu -->
+        <div class="dropdown">
+            <button class="btn btn-genre dropdown-toggle" type="button" id="genreDropdownBtn" data-bs-toggle="dropdown">
+                <i class="fa-solid fa-filter me-1"></i> Türler
+            </button>
+            <ul class="dropdown-menu dropdown-menu-dark custom-genre-dropdown" id="genreDropdownMenu">
+                <!-- JavaScript (app.js) ile TMDB'den gelen türler buraya dolacak -->
+                <li><a class="dropdown-item active" href="#" data-genre="all">Tüm Türler</a></li>
+            </ul>
+        </div>
+
+    </div>
+
+    <!-- HERO SECTION (VİTRİN ALANI) -->
+    <section class="hero-section d-none my-4" id="heroSection"> <!-- ŞİMDİLİK GİZLİ-->
+        <div class="container-fluid px-4 py-4">
+            <div class="row align-items-center">
+
+                <!-- Sol Kolon: Film Bilgileri İçin (7 Birimlik Alan) -->
+                <div class="col-lg-7 ps-lg-5">
+                    <!-- Badgeler (IMDb, Tür, Süre) -->
+                    <div class="d-flex align-items-center gap-2 mb-3 flex-wrap">
+                        <span class="badge bg-warning text-dark fs-6 px-3 py-2">
+                            <i class="fa-solid fa-star me-1"></i> <span id="heroRating">8.8</span> IMDb
+                        </span>
+
+                    </div>
+
+                    <!-- Film Başlığı -->
+                    <h1 class="display-3 fw-bold hero-title mb-3" id="heroTitle">Inception</h1>
+
+                    <!-- Film Özeti -->
+                    <p class="lead text-muted hero-overview mb-4" id="heroOverview">
+                        Hırsızlık sanatının en ileri noktası: İnsanlar uykudayken zihinlerinin en derin yerindeki
+                        sırları çalmak. Cobb, bu tehlikeli dünyada aranan bir uzmandır.
+                    </p>
+
+                    <!-- Film Detay Bilgileri (Süre, Yıl/Ülke, Türler) -->
+                    <div class="d-flex align-items-center gap-3 mb-3 small flex-wrap text-muted" id="heroDetailsBar">
+                    </div>
+
+                    <!-- Oyuncu Kadrosu Kutusu -->
+                    <div class="mb-4" id="heroCastSection">
+                        <h6 class="fw-bold text-white small mb-2"><i class="fa-solid fa-users text-purple me-1"></i>
+                            Oyuncular</h6>
+                        <div class="d-flex align-items-center gap-3 overflow-x-auto py-1" id="heroCast">
+                        </div>
+                    </div>
+
+
+
+                    <!-- Aksiyon Butonları -->
+                    <div class="d-flex align-items-center gap-3 flex-wrap">
+                        <button class="btn btn-purple btn-lg px-4 py-2" id="heroTrailerBtn">
+                            <i class="fa-solid fa-play me-2"></i> Fragmanı İzle
+                        </button>
+                        <button class="btn btn-outline-light btn-lg px-4 py-2 rounded-pill" id="heroAddListBtn">
+                            <i class="fa-solid fa-plus me-2"></i> Listeme Kaydet
+                        </button>
+                        <button class="btn btn-outline-light btn-lg px-4 py-2 rounded-pill" id="heroWatchedBtn">
+                            <i class="fa-solid fa-eye me-2"></i>İzlenenlere Kaydet
+                        </button>
+                    </div>
+
+                </div>
+
+                <!-- Sağ Kolon: Film Afiş Resmi İçin (5 Birimlik Alan) -->
+                <div class="col-lg-5 text-center text-lg-center">
+                    <!-- Film Afiş Resmi -->
+                    <div class="hero-poster-wrapper">
+                        <img src="https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_.jpg"
+                            alt="Öne Çıkan Film" class="img-fluid rounded-4 shadow-lg hero-poster-img" id="heroPoster">
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+
+    <!-- GÜNDEMDEKİLER (POPÜLER FİLMLER) BÖLÜMÜ -->
+    <section class="movies-section container-fluid px-4 my-5" id="trendingSection">
+
+
+        <!--Bölüm Başlığı-->
+        <div class="d-flex align-items-center justify-content-between mb-4">
+            <h3 class="fw-bold text-white section-title">
+                <i class="fa-solid fa-fire text-purple me-2"></i>Popüler İçerikler
+            </h3>
+            <span class="text-muted fs-6">TMDB Canlı Verileri</span>
+        </div>
+
+        <!-- Film Kartlarının Dizileceği Kutu (Grid) -->
+        <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 g-3" id="popularMoviesGrid">
+            <!-- JavaScript (app.js) ile 20 Tane Film Kartı Buraya Otomatik Dolacak -->
+            <!-- 1 Tane Örnek Film Kartı -->
+            <div class="col">
+                <div class="card movie-card h-100 border-0 rounded-4 overflow-hidden shadow position-relative">
+                    <!-- Film Afişi ve Üstündeki IMDb Puanı -->
+                    <div class="position-relative">
+                        <img src="https://image.tmdb.org/t/p/w500/oYuLE1h2CVCd1moacwXfeqKdavB.jpg"
+                            class="card-img-top movie-poster" alt="Inception">
+                        <span class="badge bg-warning text-dark position-absolute top-0 end-0 m-2 fw-bold">
+                            <i class="fa-solid fa-star me-1"></i>8.8
+                        </span>
+                    </div>
+                    <!-- Film İsmi ve Çıkış Yılı -->
+                    <div class="card-body p-3 custom-card-body text-white">
+                        <h6 class="card-title fw-bold text-truncate mb-1">Inception</h6>
+                        <div class="d-flex align-items-center justify-content-between text-muted small">
+                            <span>2010</span>
+                            <span class="badge bg-purple-badge">Bilim Kurgu</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SAYFALANDIRMA (PAGINATION) BUTONLARI -->
+        <div class="d-flex align-items-center justify-content-center gap-3 my-5" id="paginationWrapper">
+            <button class="btn btn-outline-light rounded-pill px-4" id="prevPageBtn" disabled>
+                <i class="fa-solid fa-chevron-left me-2"></i> Önceki Sayfa
+            </button>
+
+            <span class="fw-bold fs-5 text-purple" id="pageNumberDisplay">Sayfa 1</span>
+
+            <button class="btn btn-purple rounded-pill px-4" id="nextPageBtn">
+                Sonraki Sayfa <i class="fa-solid fa-chevron-right ms-2"></i>
+            </button>
+        </div>
+
+
+    </section>
+
+    <!-- YASAL FOOTER (TMDB & YOUTUBE ATFI) -->
+    <footer class="footer py-4 border-top border-purple text-center text-muted small mt-5">
+        <div class="container d-flex flex-column align-items-center gap-2">
+            <a href="https://www.themoviedb.org" target="_blank" rel="noopener noreferrer">
+                <img src="https://www.themoviedb.org/assets/2/v4/logos/v2/blue_short-8e7b30f73a4020692ccca9c88bafe5dcb6f8a62a4c6bc55cd9ba82bb2cd95f6c.svg"
+                    alt="TMDB Logo" style="height: 18px;" class="mb-1">
+            </a>
+            <p class="mb-1 text-white-50">
+                This website uses TMDB and the TMDB APIs but is not endorsed, certified, or otherwise approved by TMDB.
+            </p>
+            <p class="mb-2 text-white-50" style="font-size: 0.8rem; max-width: 650px;">
+                Film bilgileri ve görseller <a href="https://www.themoviedb.org" target="_blank"
+                    class="text-purple text-decoration-none">TMDB API</a> aracılığıyla sağlanmaktadır. Fragmanlar
+                doğrudan <a href="https://www.youtube.com" target="_blank"
+                    class="text-purple text-decoration-none">YouTube</a> resmî sayfasına yönlendirilmektedir.
+                Filmterest; TMDB veya YouTube tarafından desteklenmemekte ya da onaylanmamaktadır.
+            </p>
+
+            <a href="#" class="text-muted small text-decoration-none" data-bs-toggle="modal"
+                data-bs-target="#aboutModal">
+                <i class="fa-solid fa-circle-info me-1"></i>Hakkında & Kaynaklar
+            </a>
+
+        </div>
+    </footer>
+
+
+
+    <!-- KULLANICI GİRİŞ & KAYIT PENCERESİ (AUTH MODAL) -->
+    <div class="modal fade" id="authModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content custom-auth-modal border-0 rounded-4 shadow-lg">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold text-white" id="authModalTitle">Giriş Yap</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="d-flex bg-dark rounded-pill p-1 mb-4">
+                        <button type="button" class="btn btn-purple flex-fill  rounded-pill py-2" id="loginTabBtn">Giriş
+                            Yap</button>
+                        <button type="button" class="btn text-white-50 flex-fill rounded-pill py-2"
+                            id="registerTabBtn">Kayıt Ol</button>
+                    </div>
+                    <!-- Giriş & Kayıt formu -->
+                    <form id="authForm">
+                        <div class="mb-3">
+                            <label class="form-label text-white-50 small">E-posta Adresi</label>
+                            <input type="email" class="form-control bg-dark text-white border-secondary rounded-3"
+                                id="authEmail" placeholder="ornek@email.com" required>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label text-white-50 small">Şifre</label>
+                            <input type="password" class="form-control bg-dark text-white border-secondary rounded-3"
+                                id="authPassword" placeholder="••••••••" required>
+                        </div>
+                        <!-- Form Gönder Butonu -->
+                        <button type="submit" class="btn btn-purple w-100 rounded-pill py-2 fw-bold mb-3"
+                            id="authSubmitBtn">Giriş Yap</button>
+
+                        <!-- Hata Mesajı Kutusu (Başlangıçta Gizli) -->
+                        <div class="alert alert-danger py-2 small d-none text-center mb-0" id="authErrorMsg"></div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- HAKKINDA & KAYNAKLAR PENCERESİ (ABOUT & CREDITS) -->
+    <div class="modal fade" id="aboutModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content custom-auth-modal border-purple shadow-lg p-3">
+                <div class="modal-header border-0 pb-0 justify-content-between">
+                    <h5 class="modal-title fw-bold text-white">
+                        <i class="fa-solid fa-circle-info text-purple me-2"></i>Hakkında & Kaynaklar
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-start small text-white-50 pt-3">
+                    <h6 class="fw-bold text-white mb-2"><i class="fa-solid fa-film text-purple me-1"></i>Filmterest
+                        Nedir?</h6>
+                    <p class="mb-3">
+                        Filmterest, sinema ve dizi tutkunlarının popüler içerikleri keşfetmesini, fragmanları izlemesini
+                        ve kendi kişisel izleme listelerini oluşturmasını sağlayan modern bir web uygulamasıdır.
+                    </p>
+                    <hr class="border-secondary my-3">
+                    <h6 class="fw-bold text-white mb-2"><i class="fa-solid fa-database text-purple me-1"></i>Veri &
+                        Medya Kaynakları</h6>
+                    <div class="d-flex align-items-center gap-3 mb-2 p-2 rounded bg-dark">
+                        <a href="https://www.themoviedb.org" target="_blank" rel="noopener noreferrer">
+                            <img src="https://www.themoviedb.org/assets/2/v4/logos/v2/blue_square_2-d537fb228cf3ded904ef09b136fe3fec72548ebc1fea3fbbd1ad9e36364db38b.svg"
+                                alt="TMDB Logo" style="width: 45px;">
+                        </a>
+                        <div>
+                            <div class="text-white fw-bold">The Movie Database (TMDB)</div>
+                            <div style="font-size: 0.72rem;">This website uses TMDB and the TMDB APIs but is not
+                                endorsed, certified, or otherwise approved by TMDB.</div>
+                            <a href="https://www.themoviedb.org" target="_blank"
+                                class="text-purple text-decoration-none" style="font-size: 0.75rem;">themoviedb.org</a>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center gap-3 p-2 rounded bg-dark">
+                        <i class="fa-brands fa-youtube text-danger fs-2 ms-1"></i>
+                        <div>
+                            <div class="text-white fw-bold">YouTube</div>
+                            <div style="font-size: 0.72rem;">Fragmanlar, YouTube resmî sayfasına yönlendirilerek
+                                sunulmaktadır.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- HESABIM & PROFİL MODAL PENCERESİ (2 SEKMELİ: PROFİL BİLGİLERİ & HESAP AYARLARI) -->
+    <div class="modal fade" id="profileModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content custom-auth-modal border-purple shadow-lg p-2 p-md-3">
+
+                <!-- Modal Başlığı ve Kapat Butonu -->
+                <div class="modal-header border-0 pb-1 justify-content-between align-items-center">
+                    <h5 class="modal-title fw-bold text-white mb-0">
+                        <i class="fa-solid fa-user-astronaut text-purple me-2"></i>Hesabım & Profil
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+
+                <!-- 3'lü Üst Sekme Butonları (Profil, Takip Listesi & Hesap Ayarları) -->
+                <div class="px-3 pt-2 pb-1">
+                    <div class="d-flex bg-dark p-1 rounded-pill border-purple">
+                        <button type="button" class="btn btn-purple rounded-pill flex-fill py-2 fw-bold small"
+                            id="tabProfileBtn">
+                            <i class="fa-solid fa-id-card me-1"></i>Profil
+                        </button>
+                        <button type="button" class="btn text-white-50 rounded-pill flex-fill py-2 fw-bold small"
+                            id="tabFollowsBtn">
+                            <i class="fa-solid fa-users me-1"></i>Takip Listesi
+                        </button>
+                        <button type="button" class="btn text-white-50 rounded-pill flex-fill py-2 fw-bold small"
+                            id="tabSettingsBtn">
+                            <i class="fa-solid fa-gear me-1"></i>Hesap Ayarları
+                        </button>
+                    </div>
+                </div>
+
+                <div class="modal-body text-start pt-2">
+
+                    <!-- ============================================== -->
+                    <!-- 1. SEKME: PROFİL BİLGİLERİ (SOSYAL & LİSTELER) -->
+                    <!-- ============================================== -->
+                    <div id="profileTabContent">
+
+                        <!-- Profil Fotoğrafı ve Bilgisayardan/Galeriden Yükleme -->
+                        <div class="text-center mb-3">
+                            <div class="position-relative d-inline-block mb-2">
+                                <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Felix"
+                                    id="profileAvatarPreview" class="rounded-circle border-purple shadow"
+                                    style="width: 88px; height: 88px; object-fit: cover; background-color: #1a011d;">
+                                <label for="avatarFileInput"
+                                    class="btn btn-purple btn-sm rounded-circle position-absolute bottom-0 end-0 d-flex align-items-center justify-content-center shadow"
+                                    style="width: 32px; height: 32px; cursor: pointer; padding: 0;"
+                                    title="Galeriden veya Dosyalardan Fotoğraf Seç">
+                                    <i class="fa-solid fa-camera" style="font-size: 0.85rem;"></i>
+                                </label>
+                                <input type="file" id="avatarFileInput" accept="image/*" class="d-none">
+                            </div>
+
+                            <div class="text-white fw-bold fs-5 mb-3" id="profileDisplayNamePreview">Kullanıcı</div>
+
+                            <!-- 4'lü Tıklanabilir İstatistik Şeridi -->
+                            <div class="row g-2 text-center justify-content-center mb-3">
+                                <div class="col-3">
+                                    <div class="bg-dark py-2 px-1 rounded border-purple profile-stat-box"
+                                        id="boxStatFollowers" title="Takipçilerini Gör">
+                                        <div class="fw-bold text-white fs-6" id="statFollowersCount">0</div>
+                                        <small class="text-muted" style="font-size: 0.68rem;">Takipçiler</small>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="bg-dark py-2 px-1 rounded border-purple profile-stat-box"
+                                        id="boxStatFollowing" title="Takip Ettiklerini Gör">
+                                        <div class="fw-bold text-white fs-6" id="statFollowingCount">0</div>
+                                        <small class="text-muted" style="font-size: 0.68rem;">Takip Edilenler</small>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="bg-dark py-2 px-1 rounded border-purple profile-stat-box"
+                                        id="boxStatSaved" title="Kaydettiğin Filmlere Git">
+                                        <div class="fw-bold text-white fs-6" id="statSavedCount">0</div>
+                                        <small class="text-muted" style="font-size: 0.68rem;">Kaydedilenler</small>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="bg-dark py-2 px-1 rounded border-purple profile-stat-box"
+                                        id="boxStatWatched" title="İzlediğin Filmlere Git">
+                                        <div class="fw-bold text-white fs-6" id="statWatchedCount">0</div>
+                                        <small class="text-muted" style="font-size: 0.68rem;">İzlenenler</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Hazır Avatarlar Kartı -->
+                            <div class="p-2 rounded bg-dark border-purple mb-3 text-start">
+                                <div class="d-flex justify-content-between align-items-center mb-2 px-1">
+                                    <span class="small text-white-50">
+                                        <i class="fa-solid fa-wand-magic-sparkles text-purple me-1"></i>Hazır Avatar
+                                        Seç:
+                                    </span>
+                                    <label for="avatarFileInput" class="small text-purple fw-bold mb-0"
+                                        style="cursor: pointer;">
+                                        <i class="fa-solid fa-upload me-1"></i>Galeriden Yükle
+                                    </label>
+                                </div>
+                                <div class="d-flex justify-content-center gap-2 flex-wrap" id="avatarPickerContainer">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Kullanıcı Adı Düzenleme Formu -->
+                        <form id="profileInfoForm" class="mb-3">
+                            <div class="mb-3">
+                                <label class="form-label text-white-50 small mb-1">
+                                    <i class="fa-solid fa-at text-purple me-1"></i>Kullanıcı Adı
+                                </label>
+                                <input type="text" class="form-control" id="profileUsernameInput"
+                                    placeholder="Kullanıcı adınızı girin (örn: mr_mustafa68)" autocomplete="off"
+                                    maxlength="20" required>
+                                <div class="form-text text-white-50" style="font-size: 0.7rem;">
+                                    <i class="fa-solid fa-circle-info me-1"></i>Sadece harf, rakam ve alt çizgi (_) kullanılabilir • 3-20 karakter
+                                </div>
+                            </div>
+
+                            <div class="alert py-2 small d-none text-center mb-2" id="profileInfoAlert"></div>
+
+                            <button type="submit" class="btn btn-purple w-100 rounded-pill py-2 fw-bold"
+                                id="saveProfileInfoBtn">
+                                <i class="fa-solid fa-floppy-disk me-2"></i>Profil Bilgilerini Kaydet
+                            </button>
+                        </form>
+
+                        <!-- Arkadaşlarla Ortak Listeler Kartı -->
+                        <div class="p-3 rounded bg-dark border-purple mb-2">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="small fw-bold text-white">
+                                    <i class="fa-solid fa-users text-purple me-2"></i>Ortak Film/Dizi Listeleri
+                                </span>
+                                <button type="button" class="btn btn-outline-purple btn-sm py-0 px-2"
+                                    id="newSharedListBtn" style="font-size: 0.75rem;">
+                                    <i class="fa-solid fa-plus me-1"></i>Yeni Liste
+                                </button>
+                            </div>
+                            <div id="sharedListsContainer">
+                                <div class="text-center py-2 text-muted small">
+                                    <i class="fa-solid fa-user-group text-purple me-1"></i> Henüz bir arkadaşınızla
+                                    ortak listeniz yok.
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- ============================================== -->
+                    <!-- 3. SEKME: TAKİP LİSTESİ (TAKİPÇİLER VE TAKİP EDİLENLER) -->
+                    <!-- ============================================== -->
+                    <div id="followsTabContent" class="d-none">
+                        <!-- Alt Sekmeler: Takipçilerim & Takip Ettiklerim -->
+                        <div class="d-flex gap-2 mb-3">
+                            <button type="button" class="btn btn-purple btn-sm rounded-pill px-3 fw-bold flex-fill"
+                                id="myFollowersSubTabBtn">
+                                <i class="fa-solid fa-user-check me-1"></i>Takipçilerim (<span
+                                    id="myFollowersTabCount">0</span>)
+                            </button>
+                            <button type="button"
+                                class="btn btn-outline-purple btn-sm rounded-pill px-3 fw-bold flex-fill"
+                                id="myFollowingSubTabBtn">
+                                <i class="fa-solid fa-user-plus me-1"></i>Takip Ettiklerim (<span
+                                    id="myFollowingTabCount">0</span>)
+                            </button>
+                        </div>
+
+                        <!-- Kullanıcı Listesi (Alt alta dizilecek kutu) -->
+                        <div id="myFollowsUsersList" class="d-flex flex-column gap-2"
+                            style="max-height: 380px; overflow-y: auto;">
+                            <!-- JS buraya takipçileri veya takip edilenleri dizecek -->
+                        </div>
+                    </div>
+
+                    <!-- ============================================== -->
+                    <!-- 2. SEKME: HESAP AYARLARI (E-POSTA, ŞİFRE, GÜVENLİK) -->
+                    <!-- ============================================== -->
+                    <div id="settingsTabContent" class="d-none">
+
+                        <!-- Hesap E-postası Kartı -->
+                        <div class="p-3 rounded bg-dark border-purple mb-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="small text-muted mb-1">
+                                        <i class="fa-solid fa-envelope text-purple me-1"></i>Kayıtlı E-posta Adresi
+                                    </div>
+                                    <div class="fw-bold text-white" id="settingsEmailText">email@ornek.com</div>
+                                </div>
+                                <span
+                                    class="badge bg-success-subtle text-success border border-success px-2 py-1 small">
+                                    <i class="fa-solid fa-circle-check me-1"></i>Aktif
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Şifre Değiştirme Formu -->
+                        <form id="profilePasswordForm" class="p-3 rounded bg-dark border-purple mb-3">
+                            <div class="small fw-bold text-white mb-2">
+                                <i class="fa-solid fa-lock text-purple me-2"></i>Şifre Değiştir
+                            </div>
+                            <p class="text-white-50 small mb-3" style="font-size: 0.75rem;">
+                                Güvenliğiniz için yeni şifrenizi belirlemeden önce mevcut şifrenizi doğrulamanız
+                                gereklidir.
+                            </p>
+
+                            <div class="mb-2">
+                                <label class="form-label text-white-50 small mb-1" style="font-size: 0.75rem;">Mevcut
+                                    Şifre</label>
+                                <input type="password" class="form-control form-control-sm"
+                                    id="settingsOldPasswordInput" placeholder="Mevcut şifrenizi girin"
+                                    autocomplete="current-password" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label text-white-50 small mb-1" style="font-size: 0.75rem;">Yeni
+                                    Şifre</label>
+                                <input type="password" class="form-control form-control-sm"
+                                    id="settingsNewPasswordInput" placeholder="En az 6 karakterli yeni şifreniz"
+                                    autocomplete="new-password" required>
+                            </div>
+
+                            <div class="alert py-2 small d-none text-center mb-2" id="settingsPasswordAlert"></div>
+
+                            <button type="submit" class="btn btn-purple w-100 rounded-pill py-2 fw-bold"
+                                id="savePasswordBtn">
+                                <i class="fa-solid fa-key me-2"></i>Şifreyi Güncelle
+                            </button>
+                        </form>
+
+                        <!-- Oturum Bilgisi & Çıkış Kartı -->
+                        <div class="p-3 rounded bg-dark border-purple">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="small fw-bold text-white">Hesap Oturumu</div>
+                                    <div class="small text-muted" style="font-size: 0.75rem;">Bu tarayıcıda oturumunuz
+                                        açık</div>
+                                </div>
+                                <button type="button" class="btn btn-outline-danger btn-sm rounded-pill px-3"
+                                    id="settingsLogoutBtn">
+                                    <i class="fa-solid fa-right-from-bracket me-1"></i>Çıkış Yap
+                                </button>
+                            </div>
+                        </div>
+                        <!-- Hesabı Kalıcı Olarak Sil (Tehlikeli Bölge) -->
+                        <div class="p-3 rounded border-danger bg-dark mt-3"
+                            style="border: 1px solid rgba(220,53,69,0.5) !important;">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="small fw-bold text-danger">
+                                        <i class="fa-solid fa-triangle-exclamation me-1"></i>Hesabı Kalıcı Olarak Sil
+                                    </div>
+                                    <div class="small text-muted" style="font-size: 0.75rem;">
+                                        Hesabınız ve tüm verileriniz kalıcı olarak silinir
+                                    </div>
+                                </div>
+                                <button type="button" class="btn btn-danger btn-sm rounded-pill px-3 fw-bold"
+                                    id="deleteAccountBtn">
+                                    <i class="fa-solid fa-trash me-1"></i>Hesabı Sil
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Firebase SDK Kütüphaneleri -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+
+
+
+
+    <!-- FİLM ÇARKI MODAL PENCERESİ (GENİŞ İKİ SÜTUNLU) -->
+    <div class="modal fade" id="wheelModal" tabindex="-1">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content custom-auth-modal border-purple shadow-lg p-3">
+                <div class="modal-header border-0 pb-2 justify-content-between">
+                    <h5 class="modal-title fw-bold text-white">
+                        <i class="fa-solid fa-dice text-purple me-2"></i>Film Çarkı
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row align-items-center g-4">
+
+                        <!-- SOL SÜTUN: ÇARK VE DÖNDÜR BUTONU -->
+                        <div class="col-lg-6 d-flex flex-column align-items-center text-center">
+                            <div class="wheel-container position-relative my-2">
+                                <div class="wheel-pointer"></div>
+                                <canvas id="wheelCanvas" width="340" height="340"></canvas>
+                            </div>
+
+                            <!-- Seçilen Filmlerin Rozetleri -->
+                            <div id="wheelSelectedBadges" class="d-flex flex-wrap gap-1 justify-content-center my-2"
+                                style="max-height: 70px; overflow-y: auto;">
+                                <!-- JavaScript buraya eklenen filmleri küçük etiketler halinde dizecek -->
+                            </div>
+
+                            <p class="text-muted small mb-2" id="wheelStatusText">Çarkı çevirmek için en az 2
+                                film/dizi seçin.</p>
+
+                            <button class="btn btn-purple px-5 py-2 fw-bold rounded-pill shadow" id="spinWheelBtn"
+                                disabled>
+                                <i class="fa-solid fa-rotate me-2"></i>Çarkı Çevir!
+                            </button>
+                        </div>
+
+                        <!-- SAĞ SÜTUN: MİNİ FİLM ARAMA VE SEÇME LİSTESİ -->
+                        <div class="col-lg-6">
+                            <div class="search-box mb-3 w-100">
+                                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                                <input type="text" id="wheelSearchInput" class="form-control custom-search w-100"
+                                    placeholder="Çarka eklemek için film veya dizi ara...">
+                            </div>
+
+                            <!-- Mini Film Kartlarının Listeleneceği Kutu -->
+                            <div id="wheelCandidatesList" class="d-flex flex-column gap-2 pe-1"
+                                style="max-height: 380px; overflow-y: auto;">
+                                <!-- JavaScript buraya küçük film kartlarını basacak -->
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ŞATAFATLI ÇARK KAZANANI MODAL PENCERESİ -->
+    <div class="modal fade" id="wheelWinnerModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content custom-auth-modal border-purple shadow-lg p-3 text-center position-relative">
+
+                <!-- Üst Başlık & Rozet -->
+                <div class="modal-header border-0 pb-0 justify-content-center">
+                    <span class="badge bg-purple px-4 py-2 rounded-pill fs-6 text-white shadow"
+                        style="background-color: var(--accent-purple);">
+                        🎉 Çark Seçimini Yaptı!
+                    </span>
+                </div>
+
+                <div class="modal-body py-3">
+                    <!-- Kazanan Film Posteri (Mor Neon Işıklı ve Yuvarlatılmış) -->
+                    <div class="position-relative d-inline-block my-3">
+                        <img id="wheelWinnerPoster" src="" alt="Film Posteri" class="rounded-4 border-purple"
+                            style="width: 180px; height: 260px; object-fit: cover; box-shadow: 0 0 35px rgba(147, 51, 234, 0.7) !important;">
+                        <span
+                            class="position-absolute top-0 end-0 translate-middle badge rounded-pill bg-warning text-dark fs-6 px-2 py-1 shadow">
+                            <i class="fa-solid fa-star me-1"></i><span id="wheelWinnerRating">0.0</span>
+                        </span>
+                    </div>
+
+                    <!-- Film İsmi ve Yılı -->
+                    <h3 class="fw-bold text-white mb-1" id="wheelWinnerTitle">Film Adı</h3>
+                    <p class="text-white-50 small mb-4" id="wheelWinnerYear">2026 • Film</p>
+
+                    <!-- Butonlar -->
+                    <div class="d-flex justify-content-center gap-2">
+                        <button type="button" class="btn btn-purple rounded-pill px-4 py-2 fw-bold"
+                            id="wheelWinnerDetailBtn">
+                            <i class="fa-solid fa-circle-play me-2"></i>Filmi İncele
+                        </button>
+                        <button type="button" class="btn btn-outline-light rounded-pill px-3 py-2 fw-bold"
+                            data-bs-dismiss="modal">
+                            Kapat
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- TOPLULUK & ARKADAŞLAR MODAL PENCERESİ -->
+    <div class="modal fade" id="communityModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content custom-auth-modal border-purple shadow-lg p-2 p-md-3">
+
+                <!-- Başlık ve Kapat Butonu -->
+                <div class="modal-header border-0 pb-2 justify-content-between align-items-center">
+                    <h5 class="modal-title fw-bold text-white mb-0">
+                        <i class="fa-solid fa-users text-purple me-2"></i>Filmterest Topluluğu
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body pt-2">
+                    <!-- Arkadaş Arama Çubuğu -->
+                    <div class="search-box mb-3 w-100">
+                        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                        <input type="text" id="communitySearchInput" class="form-control custom-search w-100"
+                            placeholder="Kullanıcı adına göre arkadaş ara... (örn: marinette)">
+                    </div>
+
+                    <!-- Filtre Sekmeleri: Herkesi Keşfet, Takipçilerim & Takip Ettiklerim -->
+                    <div class="d-flex gap-2 mb-3 flex-wrap">
+                        <button type="button" class="btn btn-purple btn-sm rounded-pill px-3 fw-bold"
+                            id="communityTabAllBtn">
+                            Herkesi Keşfet
+                        </button>
+                        <button type="button" class="btn btn-outline-purple btn-sm rounded-pill px-3 fw-bold"
+                            id="communityTabFollowersBtn">
+                            Takipçilerim
+                        </button>
+                        <button type="button" class="btn btn-outline-purple btn-sm rounded-pill px-3 fw-bold"
+                            id="communityTabFollowingBtn">
+                            Takip Ettiklerim
+                        </button>
+                    </div>
+
+                    <!-- Kullanıcı Listesi Kutusu (JavaScript buraya kartları dizecek) -->
+                    <div id="communityUsersList" class="d-flex flex-column gap-2" style="min-height: 200px;">
+                        <div class="text-center py-4 text-muted small">
+                            <i class="fa-solid fa-spinner fa-spin me-2"></i>Kullanıcılar aranıyor...
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ARKADAŞ PROFİLİ VE FİLM LİSTELERİ MODAL PENCERESİ -->
+    <div class="modal fade" id="friendProfileModal" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content custom-auth-modal border-purple shadow-lg p-2 p-md-3">
+
+                <!-- Başlık ve Kapat Butonu -->
+                <div class="modal-header border-0 pb-2 justify-content-between align-items-center">
+                    <h5 class="modal-title fw-bold text-white mb-0" id="friendProfileTitle">
+                        <i class="fa-solid fa-user text-purple me-2"></i>Kullanıcı Profili
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body pt-1">
+                    <!-- Arkadaşın Kimlik Kartı & Takipçi Sayıları -->
+                    <div class="p-3 rounded bg-dark border-purple mb-3 text-center">
+                        <img id="friendAvatar" src="" class="rounded-circle border-purple shadow mb-2"
+                            style="width: 75px; height: 75px; object-fit: cover; background: #1a011d;">
+                        <h4 class="fw-bold text-white mb-1" id="friendUsername">Kullanıcı</h4>
+
+                        <!-- Takip Et / Takipten Çık Butonu -->
+                        <div class="my-2" id="friendFollowBtnWrapper"></div>
+
+                        <!-- 2'li Tıklanabilir Mini İstatistik (Takipçiler & Takip Edilenler) -->
+                        <div class="row g-2 justify-content-center mt-2">
+                            <div class="col-4 col-sm-3">
+                                <div class="bg-black bg-opacity-25 py-2 rounded border-purple profile-stat-box"
+                                    id="friendStatBoxFollowers" style="cursor: pointer;" title="Takipçilerini Gör">
+                                    <div class="fw-bold text-white small" id="friendStatFollowers">0</div>
+                                    <small class="text-muted" style="font-size: 0.72rem;">Takipçiler</small>
+                                </div>
+                            </div>
+                            <div class="col-4 col-sm-3">
+                                <div class="bg-black bg-opacity-25 py-2 rounded border-purple profile-stat-box"
+                                    id="friendStatBoxFollowing" style="cursor: pointer;" title="Takip Ettiklerini Gör">
+                                    <div class="fw-bold text-white small" id="friendStatFollowing">0</div>
+                                    <small class="text-muted" style="font-size: 0.72rem;">Takip Edilenler</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Liste Sekmeleri: Kaydettiği Filmler, İzlediği Filmler, Takipçiler & Takip Edilenler -->
+                    <div class="d-flex gap-2 mb-3 flex-wrap">
+                        <button type="button" class="btn btn-purple btn-sm rounded-pill px-3 fw-bold"
+                            id="friendTabSavedBtn">
+                            <i class="fa-solid fa-bookmark me-1"></i>Kaydettiği Filmler
+                        </button>
+                        <button type="button" class="btn btn-outline-purple btn-sm rounded-pill px-3 fw-bold"
+                            id="friendTabWatchedBtn">
+                            <i class="fa-solid fa-eye me-1"></i>İzlediği Filmler
+                        </button>
+                        <button type="button" class="btn btn-outline-purple btn-sm rounded-pill px-3 fw-bold"
+                            id="friendTabFollowersBtn">
+                            <i class="fa-solid fa-users me-1"></i>Takipçiler
+                        </button>
+                        <button type="button" class="btn btn-outline-purple btn-sm rounded-pill px-3 fw-bold"
+                            id="friendTabFollowingBtn">
+                            <i class="fa-solid fa-user-plus me-1"></i>Takip Edilenler
+                        </button>
+                    </div>
+
+                    <!-- Arkadaşın Film Kartlarının Dizileceği Izgara (Grid) -->
+                    <div id="friendMoviesGrid" class="row g-3" style="min-height: 180px;">
+                        <!-- JavaScript filmleri buraya basacak -->
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Şık Kayan Bildirim Kutusu (Toast) -->
+    <div id="customToast" class="custom-toast">
+        <i id="customToastIcon" class="fa-solid fa-circle-check text-success fs-5"></i>
+        <span id="customToastMessage">Bildirim</span>
+    </div>
+
+    <!-- FİLM PUANLAMA, YORUM VE FAVORİ DEĞERLENDİRME MODALI -->
+    <div class="modal fade" id="movieReviewModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content custom-auth-modal border-purple shadow-lg p-3">
+                <div class="modal-header border-0 pb-1 justify-content-between align-items-center">
+                    <h5 class="modal-title fw-bold text-white mb-0">
+                        <i class="fa-solid fa-star text-warning me-2"></i>Filmi Değerlendir
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body pt-2 text-center">
+                    <!-- Film Başlığı & Favori Butonu -->
+                    <div
+                        class="d-flex align-items-center justify-content-between bg-dark p-3 rounded border-purple mb-3">
+                        <div class="text-start">
+                            <h6 class="fw-bold text-white mb-0" id="reviewMovieName">Film Adı</h6>
+                            <small class="text-muted" id="reviewMovieYear">2026</small>
+                        </div>
+                        <button type="button" class="btn btn-outline-danger btn-sm rounded-pill px-3 fw-bold"
+                            id="reviewFavoriteToggleBtn">
+                            <i class="fa-regular fa-heart me-1" id="reviewFavoriteIcon"></i><span
+                                id="reviewFavoriteText">Favorilere Ekle</span>
+                        </button>
+                    </div>
+
+                    <!-- 10 Üzerinden Puan Seçici (1-10 Butonları) -->
+                    <label class="form-label text-white-50 small mb-2 d-block text-start">Puanınız (10
+                        üzerinden):</label>
+                    <div class="d-flex justify-content-between gap-1 mb-3 flex-wrap" id="ratingButtonsContainer">
+                        <!-- JS 1'den 10'a kadar butonları buraya oluşturacak -->
+                    </div>
+
+                    <!-- Yorum Kutusu -->
+                    <div class="text-start mb-3">
+                        <label class="form-label text-white-50 small mb-1">Film Hakkındaki Düşünceniz /
+                            Yorumunuz:</label>
+                        <textarea id="movieReviewComment" class="form-control custom-search" rows="3"
+                            placeholder="Bu film hakkında ne düşünüyorsun? (Arkadaşların profilinde görebilecek)"></textarea>
+                    </div>
+
+                    <!-- Kaydet Butonu -->
+                    <button type="button" class="btn btn-purple rounded-pill w-100 py-2 fw-bold" id="saveReviewBtn">
+                        <i class="fa-solid fa-floppy-disk me-2"></i>Değerlendirmeyi Kaydet
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ORTAK FİLM LİSTESİ MODAL PENCERESİ -->
+    <div class="modal fade" id="sharedListModal" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content custom-auth-modal border-purple shadow-lg p-2 p-md-3">
+
+                <!-- Başlık ve Kapat Butonu -->
+                <div class="modal-header border-0 pb-2 justify-content-between align-items-center">
+                    <h5 class="modal-title fw-bold text-white mb-0" id="sharedListTitle">
+                        <i class="fa-solid fa-users text-purple me-2"></i>Ortak Film Listesi
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body pt-1">
+                    <!-- Arkadaşların Kimlik Kartı & Bilgisi -->
+                    <div class="p-3 rounded bg-dark border-purple mb-3 text-center">
+                        <div class="d-flex justify-content-center align-items-center gap-3 mb-2">
+                            <div class="text-center">
+                                <img id="sharedUser1Avatar" src="" class="rounded-circle border-purple shadow"
+                                    style="width: 52px; height: 52px; object-fit: cover; background: #1a011d;">
+                                <div class="small fw-bold text-white mt-1 text-truncate" style="max-width: 100px;"
+                                    id="sharedUser1Name">Kullanıcı 1</div>
+                            </div>
+                            <div class="fs-4 text-purple px-1">🍿</div>
+                            <div class="text-center">
+                                <img id="sharedUser2Avatar" src="" class="rounded-circle border-purple shadow"
+                                    style="width: 52px; height: 52px; object-fit: cover; background: #1a011d;">
+                                <div class="small fw-bold text-white mt-1 text-truncate" style="max-width: 100px;"
+                                    id="sharedUser2Name">Kullanıcı 2</div>
+                            </div>
+                        </div>
+                        <div class="small text-white-50" id="sharedListSubInfo">Ortak Film & Dizi Listesi</div>
+                    </div>
+
+                    <!-- Canlı Film/Dizi Arama ve Listeye Ekleme Kutusu -->
+                    <div class="search-box mb-3 position-relative">
+                        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                        <input type="text" id="sharedMovieSearchInput" class="form-control custom-search w-100"
+                            placeholder="Ortak listeye film veya dizi ara ve ekle... (örn: Inception)">
+                        <div id="sharedMovieSearchResults"
+                            class="list-group position-absolute w-100 shadow-lg mt-1 d-none"
+                            style="z-index: 1060; max-height: 250px; overflow-y: auto; background: #16001d; border: 1px solid var(--accent-purple); border-radius: 12px;">
+                        </div>
+                    </div>
+
+                    <!-- Sekmeler: Birlikte İzleyeceklerimiz & Birlikte İzlediklerimiz -->
+                    <div class="d-flex gap-2 mb-3">
+                        <button type="button" class="btn btn-purple btn-sm rounded-pill px-3 fw-bold flex-fill"
+                            id="sharedTabToWatchBtn">
+                            <i class="fa-solid fa-bookmark me-1"></i>Birlikte İzleyeceklerimiz (<span
+                                id="sharedToWatchCount">0</span>)
+                        </button>
+                        <button type="button" class="btn btn-outline-purple btn-sm rounded-pill px-3 fw-bold flex-fill"
+                            id="sharedTabWatchedBtn">
+                            <i class="fa-solid fa-circle-check me-1"></i>Birlikte İzlediklerimiz (<span
+                                id="sharedWatchedCount">0</span>)
+                        </button>
+                    </div>
+
+                    <!-- Ortak Film Kartlarının Dizileceği Izgara -->
+                    <div id="sharedMoviesGrid" class="row g-3" style="min-height: 200px;">
+                        <!-- JS buraya kartları dolduracak -->
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ORTAK LİSTE İÇİN DEĞERLENDİRME & YORUM MODALI -->
+    <div class="modal fade" id="sharedMovieReviewModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content custom-auth-modal border-purple shadow-lg p-3">
+                <div class="modal-header border-0 pb-1 justify-content-between align-items-center">
+                    <h5 class="modal-title fw-bold text-white mb-0">
+                        <i class="fa-solid fa-star text-warning me-2"></i>Ortak Filmi Değerlendir
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body pt-2 text-center">
+                    <div
+                        class="d-flex align-items-center justify-content-between bg-dark p-3 rounded border-purple mb-3">
+                        <div class="text-start">
+                            <h6 class="fw-bold text-white mb-0" id="sharedReviewMovieTitle">Film Adı</h6>
+                            <small class="text-muted" id="sharedReviewMovieYear">2026</small>
+                        </div>
+                        <button type="button" class="btn btn-outline-danger btn-sm rounded-pill px-3 fw-bold"
+                            id="sharedReviewFavoriteBtn">
+                            <i class="fa-regular fa-heart me-1" id="sharedReviewFavoriteIcon"></i><span
+                                id="sharedReviewFavoriteText">Favorilere Ekle</span>
+                        </button>
+                    </div>
+
+                    <!-- 1-10 Puan Seçici -->
+                    <label class="form-label text-white-50 small mb-2 d-block text-start">Senin Puanın (10
+                        üzerinden):</label>
+                    <div class="d-flex justify-content-between gap-1 mb-3 flex-wrap" id="sharedRatingButtonsContainer">
+                    </div>
+
+                    <!-- Yorum Kutusu -->
+                    <div class="text-start mb-3">
+                        <label class="form-label text-white-50 small mb-1">Film Hakkındaki Yorumun:</label>
+                        <textarea id="sharedMovieReviewComment" class="form-control custom-search" rows="3"
+                            placeholder="Arkadaşınla ortak filminiz hakkında düşüncelerini yaz..."></textarea>
+                    </div>
+
+                    <button type="button" class="btn btn-purple rounded-pill w-100 py-2 fw-bold"
+                        id="saveSharedReviewBtn">
+                        <i class="fa-solid fa-floppy-disk me-2"></i>Ortak Değerlendirmeyi Kaydet
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- EVRENSEL ONAY MODALI (Hesabı Sil & Çıkış Yap) -->
+    <div class="modal fade" id="confirmActionModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
+            <div class="modal-content custom-auth-modal border-purple shadow-lg p-3">
+                <div class="modal-body text-center pt-3 pb-1">
+                    <div class="mb-3" id="confirmActionIcon">
+                        <i class="fa-solid fa-triangle-exclamation text-warning" style="font-size: 2.5rem;"></i>
+                    </div>
+                    <h5 class="fw-bold text-white mb-2" id="confirmActionTitle">Emin misiniz?</h5>
+                    <p class="text-white-50 small mb-4" id="confirmActionMessage">Bu işlemi yapmak istediğinizden emin
+                        misiniz?</p>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-dark border-secondary rounded-pill flex-fill py-2 fw-bold"
+                            data-bs-dismiss="modal">
+                            <i class="fa-solid fa-xmark me-1"></i>İptal
+                        </button>
+                        <button type="button" class="btn rounded-pill flex-fill py-2 fw-bold" id="confirmActionYesBtn">
+                            <i class="fa-solid fa-check me-1"></i>Evet
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>

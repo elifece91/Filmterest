@@ -1,0 +1,18 @@
+# İşletim sistemi gereksiz dosyaları
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Kod editörü ayarları (kişisel)
+.vscode/
+.idea/
+
+# Firebase CLI yerel dosyaları ve logları
+.firebase/
+.firebaserc
+firebase.json
+firebase-debug.log
+*-debug.log
+
+# Node (ileride gerekirse)
+node_modules/

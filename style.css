@@ -1,0 +1,575 @@
+/* Genel Koyu Tema Ayarları */
+:root {
+    --bg-main: #210224;
+    /* Netflix ana koyu arka planı */
+    --bg-card: #2b004b;
+    /* Film kartlarının arka planı */
+    --bg-card-hover: #41297d;
+    /* Üzerine gelince belirginleşen mor tonu */
+    --accent-purple: #780495;
+    /* Vurgu ve logo moru */
+    --accent-pink: #a60eba;
+    /* İkincil neon pembe/mor tonu */
+    --text-main: #ffffff;
+    /* Beyaz yazı */
+    --text-muted: #aaaaaa;
+    /* Gri yazı */
+}
+
+body {
+    background-color: var(--bg-main) !important;
+    /* !important tüm kuralları unut benim verdiğimi uygula*/
+    color: var(--text-main);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* özel yardımcı renk sınıfları */
+.text-purple {
+    color: var(--accent-purple) !important;
+}
+
+/* Arama Kutusu ve Büyüteç Hizalaması */
+.search-box {
+    position: relative;
+    /* İkon bu kutunun sınırları dışına çıkmasın */
+    width: 220px;
+}
+
+.search-icon {
+    position: absolute;
+    /* İkonu kutunun içinde özgürce hareket ettir */
+    left: 12px;
+    /* Soldan 12px içeri al */
+    top: 50%;
+    /* Dikeyde tam ortala */
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    /* İkon rengini tatlı bir gri yap */
+    z-index: 10;
+    /* İkon kutunun altında kalmasın, üstte görünsün */
+}
+
+.custom-search {
+    background-color: var(--bg-card) !important;
+    border: 1px solid rgba(147, 51, 234, 0.3) !important;
+    color: var(--text-main) !important;
+    padding-left: 38px !important;
+    /* Yazı büyüteç ikonunun üstüne binmesin diye soldan iç boşluk */
+    border-radius: 20px !important;
+    /* Oval köşeler */
+}
+
+/* Arama Kutusundaki "Film ara..." Yazısını Açık Renk Yapma */
+.custom-search::placeholder {
+    color: rgba(255, 255, 255, 0.7) !important;
+    /* Açık grimsi beyaz */
+}
+
+
+/* Logo ve Menü Yazılarını Beyaz Yapma */
+.logo-text {
+    color: #ffffff !important;
+    /* Logo yazısını beyaz yapar */
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.nav-link {
+    color: #ffffff !important;
+    /* Ana Sayfa, Kaydedilenler vs. HEPSİNİ BEYAZ yapar */
+    font-weight: 500;
+}
+
+.nav-link:hover {
+    color: var(--accent-purple) !important;
+    /* Fare üzerine gelince mor parlasın */
+}
+
+/* Mor Buton Stili (Giriş Yap / Kayıt Ol) */
+.btn-purple {
+    background-color: var(--accent-purple) !important;
+    /* Arka planı mor yapar */
+    color: rgba(255, 255, 255, 0.7) !important;
+    /* Yazıyı HER ZAMAN BEYAZ yapar */
+    border-radius: 20px !important;
+    /* Köşeleri oval yapar */
+    font-weight: 600;
+    /* Yazıyı kalınlaştırır */
+    border: none;
+    /* Çirkin kenarlığı kaldırır */
+    transition: all 0.2s ease;
+}
+
+/* Şeffaf İçi Boş Mor Çerçeveli Buton */
+.btn-outline-purple {
+    background-color: transparent !important;
+    border: 1px solid var(--accent-purple) !important;
+    color: #ffffff !important;
+    border-radius: 20px !important;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.btn-outline-purple:hover {
+    background-color: var(--accent-purple) !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 15px rgba(120, 4, 149, 0.5) !important;
+}
+
+/* Mor Buton Üzerine Gelince Hafif Yükselme ve Neon Parlama */
+.btn-purple:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(120, 4, 149, 0.6) !important;
+    filter: brightness(1.1);
+}
+
+/* Mor Butona Tıklanıp Basılınca İçe Çökme ve Koyulaşma Efekti */
+.btn-purple:active {
+    transform: scale(0.95);
+    filter: brightness(0.8);
+    box-shadow: 0 2px 8px rgba(120, 4, 149, 0.4) !important;
+}
+
+
+/* Menü Altı Ayırıcı Mor Çizgi ve Cam Efekti */
+.custom-navbar {
+    border-bottom: 1px solid rgba(147, 51, 234, 0.4) !important;
+    /* Alt tarafa mor çizgi */
+    background-color: rgba(33, 2, 36, 0.95) !important;
+    /* Hafif şeffaf koyu mor */
+    backdrop-filter: blur(10px);
+    /* Arkadaki içeriğe buzlu cam efekti */
+}
+
+/* Kategori Butonları Stili (Filmler, Diziler, Belgeseller) */
+.btn-category {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+    /* Şık şeffaf arka plan */
+    color: #ffffff !important;
+    /* YAZILARI PARLAK BEYAZ YAP */
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    /* Hafif kenarlık */
+    border-radius: 20px !important;
+    /* Oval köşeler */
+    font-size: 0.9rem;
+    padding: 6px 16px !important;
+    transition: all 0.25s ease;
+}
+
+/* Seçili (Aktif) veya Üzerine Gelinen Buton Stili */
+.btn-category.active,
+.btn-category:hover {
+    background-color: var(--accent-purple) !important;
+    /* Seçilince Canlı Mor Arka Plan */
+    color: #ffffff !important;
+    border-color: var(--accent-purple) !important;
+    box-shadow: 0 4px 12px rgba(120, 4, 149, 0.4);
+    /* Mor parlama efekti */
+}
+
+/* Sağdaki Türler (Dropdown) Butonu Stili */
+.btn-genre {
+    background-color: var(--bg-card) !important;
+    /* Koyu mor kart arka planı */
+    color: #ffffff !important;
+    /* YAZIYI BEYAZ YAP */
+    border: 1px solid rgba(147, 51, 234, 0.4) !important;
+    /* Mor kenarlık */
+    border-radius: 20px !important;
+    font-size: 0.9rem;
+    padding: 6px 16px !important;
+}
+
+/* Hero Özet Yazısı ve Süre Rengi */
+.hero-overview {
+    color: rgba(255, 255, 255, 0.85) !important;
+    /* Özet yazısını okunur açık renk yapar */
+}
+
+/* Bilim Kurgu Rozeti Stili */
+.bg-purple-badge {
+    background-color: var(--accent-purple) !important;
+    color: #ffffff !important;
+}
+
+.fa-clock {
+    color: rgba(255, 255, 255, 0.85) !important;
+}
+
+.text-muted {
+    color: rgba(255, 255, 255, 0.85) !important;
+}
+
+/* Film Kartları Stili */
+.movie-card {
+    background-color: var(--bg-card) !important;
+    /* Koyu mor kart arka planı */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+    /* Tıklanabilir el simgesi */
+}
+
+/* Kartın Üzerine Gelince Mor Parlama Efekti */
+.movie-card:hover {
+    transform: translateY(-8px);
+    /* 8px yukarı zıplar */
+    box-shadow: 0 10px 20px rgba(147, 51, 234, 0.4) !important;
+    /* Mor parlama gölgesi */
+}
+
+.movie-poster {
+    height: 280px;
+    object-fit: cover;
+    /* Afiş resmini oranını bozmadan sığdırır */
+}
+
+.custom-card-body {
+    background-color: var(--bg-card) !important;
+}
+
+/* Sayfalandırma Butonlarının Mor Neon Parlama Efekti */
+#prevPageBtn:hover:not(:disabled),
+#nextPageBtn:hover:not(:disabled) {
+    box-shadow: 0 4px 15px rgba(147, 51, 234, 0.6) !important;
+    /* Canlı mor neon ışığı */
+    transform: translateY(-2px);
+    /* Hafif 2px yukarı zıplama */
+    transition: all 0.25s ease;
+}
+
+/* Türler Açılır Menüsünün Koyu Mor Tema Stili */
+.custom-genre-dropdown {
+    background-color: var(--bg-card) !important;
+    /* Arka planı koyu mor yapar */
+    border: 1px solid rgba(147, 51, 234, 0.4) !important;
+    /* Mor renkte şık kenarlık */
+    border-radius: 15px !important;
+    /* Oval yumuşak köşeler */
+    max-height: 300px;
+    /* Liste çok uzun, ekranı kaplamasın diye maks 300px yükseklik */
+    overflow-y: auto;
+    /* İhtiyaç olunca sağda şık kaydırma çubuğu açar */
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5) !important;
+    /* Derin gölge */
+}
+
+/* Türler Menüsünün İnce Koyu Mor Kaydırma Çubuğu */
+.custom-genre-dropdown::-webkit-scrollbar {
+    width: 6px;
+    /* Zarif ve ince görünüm */
+}
+
+.custom-genre-dropdown::-webkit-scrollbar-track {
+    background: #1a0122;
+    /* Rayı çok koyu gece moru */
+    border-radius: 10px;
+}
+
+.custom-genre-dropdown::-webkit-scrollbar-thumb {
+    background: var(--accent-purple);
+    /* Kayan tutamaç canlı mor */
+    border-radius: 10px;
+    /* Yuvarlak hap şeklinde köşeler */
+}
+
+.custom-genre-dropdown::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-pink);
+    /* Fareyle tutunca parıldayan neon pembe/mor */
+}
+
+
+/* Menüdeki Seçeneklerin (Aksiyon, Komedi vs.) Rengi */
+.custom-genre-dropdown .dropdown-item {
+    color: #ffffff !important;
+    /* Yazıları beyaz yapar */
+    font-size: 0.9rem;
+    padding: 8px 16px;
+    transition: background-color 0.2s ease;
+}
+
+/* Mouse Üzerine Gelince veya Seçilince (Active) Mor Olması */
+.custom-genre-dropdown .dropdown-item:hover,
+.custom-genre-dropdown .dropdown-item.active {
+    background-color: var(--accent-purple) !important;
+    /* Bootstrap mavisi yerine bizim canlı mor! */
+    color: #ffffff !important;
+}
+
+.hero-poster-img {
+    max-height: 550px !important;
+    width: auto !important;
+    object-fit: cover;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6) !important;
+}
+
+/* Oyuncular Şeridinin Özel Şık Mor Kaydırma Çubuğu */
+#heroCast::-webkit-scrollbar {
+    height: 6px;
+}
+
+#heroCast::-webkit-scrollbar-thumb {
+    background: var(--accent-purple);
+    border-radius: 10px;
+}
+
+/* İkincil Şeffaf Mor Kapsül Rozet Stili */
+.bg-secondary-purple {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    color: #ffffff !important;
+    border-radius: 12px !important;
+    font-weight: 500;
+}
+
+
+/* Giriş & Kayıt Modalının Koyu Mor Teması */
+.custom-auth-modal {
+    background-color: var(--bg-card) !important;
+    border: 1px solid rgba(147, 51, 234, 0.3) !important;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7) !important;
+}
+
+/* Modalların Ekrandan Taşmasını Engelleyen Özel Mor Kaydırma Çubuğu */
+.custom-auth-modal .modal-body {
+    max-height: 72vh;
+    overflow-y: auto;
+}
+
+.custom-auth-modal .modal-body::-webkit-scrollbar {
+    width: 6px;
+}
+
+.custom-auth-modal .modal-body::-webkit-scrollbar-track {
+    background: #120015;
+}
+
+.custom-auth-modal .modal-body::-webkit-scrollbar-thumb {
+    background: var(--accent-purple);
+    border-radius: 4px;
+}
+
+/* Giriş Kutularının Varsayılan Koyu Gece Moru Zemin Rengi */
+.custom-auth-modal .form-control {
+    background-color: #1a011d !important;
+    border-color: rgba(255, 255, 255, 0.15) !important;
+    color: #ffffff !important;
+}
+
+
+/* Giriş Kutularına Tıklanınca Mor Parlama Efekti */
+.custom-auth-modal .form-control:focus {
+    background-color: #1a011d !important;
+    border-color: var(--accent-purple) !important;
+    box-shadow: 0 0 10px rgba(120, 4, 149, 0.5) !important;
+    color: #ffffff !important;
+}
+
+/* Sekme Butonlarının Zeminini Koyu Mor Yapma */
+.custom-auth-modal .bg-dark {
+    background-color: #1a011d !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+
+/* FİLM ÇARKI (WHEEL OF FORTUNE) STİLLERİ */
+.wheel-container {
+    display: inline-block;
+    position: relative;
+    border-radius: 50%;
+    box-shadow: 0 0 30px rgba(120, 4, 149, 0.6);
+}
+
+#wheelCanvas {
+    display: block;
+    border-radius: 50%;
+}
+
+.wheel-pointer {
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 14px solid transparent;
+    border-right: 14px solid transparent;
+    border-top: 24px solid #f1c40f;
+    /* Altın sarısı ibre */
+    filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.8));
+    z-index: 10;
+}
+
+
+/* Çark İçin Mini Film Kartı Stilleri */
+.wheel-candidate-card {
+    background: #1a011d;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.wheel-candidate-card:hover {
+    border-color: var(--accent-purple);
+    transform: translateX(4px);
+    background: #240129;
+}
+
+.wheel-candidate-card.selected {
+    border-color: #2ecc71;
+    /* Çarka eklenince yeşil onay çerçevesi */
+    background: rgba(46, 204, 113, 0.1);
+}
+
+/* Çarkın Altındaki Seçim Rozetleri */
+.wheel-badge {
+    background: var(--accent-purple);
+    color: #ffffff;
+    font-size: 0.75rem;
+    padding: 4px 10px;
+    border-radius: 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.wheel-badge .remove-btn {
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.wheel-badge .remove-btn:hover {
+    color: #ff4757;
+    /* Çarpı üzerine gelince kırmızı uyarı */
+}
+
+/* Film Izgarası Boşken veya Yüklenirken Footer'ın Yukarı Zıplamasını Önler */
+#popularMoviesGrid {
+    min-height: 55vh;
+}
+
+/* Profil Avatarı Seçim Kutucukları */
+.avatar-choice {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    background-color: #1a011d;
+    transition: all 0.2s ease;
+    object-fit: cover;
+}
+
+.avatar-choice:hover {
+    transform: scale(1.18);
+    border-color: var(--accent-purple);
+}
+
+.avatar-choice.active {
+    border-color: #a855f7;
+    /* Seçili olan avatarın etrafında canlı mor neon halka */
+    box-shadow: 0 0 12px rgba(168, 85, 247, 0.7);
+    transform: scale(1.12);
+}
+
+/* Sağ Üst Profil Menüsü Koyu Mor Kapsülü */
+.user-profile-btn {
+    background-color: var(--bg-card) !important;
+    /* Temanın koyu mor arka planı */
+    border: 1px solid rgba(147, 51, 234, 0.5) !important;
+    /* İnce mor kenarlık */
+    color: #ffffff !important;
+    transition: all 0.25s ease;
+}
+
+/* Fareyle üzerine gelince parlasın ve hafif yukarı zıplasın */
+.user-profile-btn:hover {
+    background-color: var(--bg-card-hover) !important;
+    border-color: var(--accent-purple) !important;
+    box-shadow: 0 0 15px rgba(147, 51, 234, 0.5) !important;
+    transform: translateY(-1px);
+}
+
+
+/* Ekranın Sağ Altından Kayan Şık Bildirim (Toast) */
+.custom-toast {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    background: #1c0024;
+    border: 1px solid var(--accent-purple);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7), 0 0 15px rgba(120, 4, 149, 0.5);
+    color: #ffffff;
+    padding: 12px 22px;
+    border-radius: 30px;
+    z-index: 999999;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    pointer-events: none;
+}
+
+/* Bildirim tetiklendiğinde yukarı doğru kayıp görünsün */
+.custom-toast.show {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Film Kartlarındaki Hızlı Silme (Çarpı) Butonu */
+.delete-movie-btn {
+    transition: all 0.2s ease;
+}
+
+.delete-movie-btn:hover {
+    background: #ff4757 !important;
+    /* Üzerine gelince kırmızı olsun */
+    border-color: #ff4757 !important;
+    transform: scale(1.15);
+    /* Hafif büyüsün */
+}
+
+.delete-movie-btn:hover i {
+    color: #ffffff !important;
+    /* İçindeki çarpı bembeyaz olsun */
+}
+
+/* Profildeki 4'lü İstatistik Kutularının Tıklanma ve Parlama Efekti */
+.profile-stat-box {
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.profile-stat-box:hover {
+    transform: translateY(-3px);
+    /* Hafif yukarı zıplasın */
+    border-color: var(--accent-purple) !important;
+    /* Kenarlığı canlı mor yansın */
+    box-shadow: 0 4px 15px rgba(120, 4, 149, 0.5);
+    /* Mor neon ışığı saçsın */
+}
+
+/* Ortak Liste Film Arama Sonuçları Öğeleri */
+.shared-search-item {
+    background-color: #1a011d;
+    color: #ffffff;
+    border: none;
+    border-bottom: 1px solid rgba(147, 51, 234, 0.2);
+    cursor: pointer;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.2s ease;
+}
+
+.shared-search-item:hover {
+    background-color: #3b0764;
+    color: #ffffff;
+}
