@@ -7,10 +7,8 @@ desktop.ini
 .vscode/
 .idea/
 
-# Firebase CLI yerel dosyaları ve logları
+# Firebase CLI önbelleği ve log dosyaları
 .firebase/
-.firebaserc
-firebase.json
 firebase-debug.log
 *-debug.log
 

@@ -4,6 +4,12 @@
 
 Built with **vanilla JavaScript**, **Bootstrap 5**, the **TMDB API**, and **Firebase** (Auth + Cloud Firestore).
 
+## 🔗 Live Demo
+
+🚀 **Try it live:** **[https://filmterest-87188.web.app](https://filmterest-87188.web.app)**
+
+No installation needed — explore trending movies & TV shows, create an account, and build your own watchlist!
+
 ## ✨ Features
 
 - 🔥 **Trending Content** — browse today's most popular movies *and* TV shows in a single mixed feed
@@ -33,7 +39,7 @@ The app is a **static site** — no build step required.
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/YOUR_USERNAME/filmterest.git
+git clone https://github.com/elifece91/Filmterest.git
 
 # 2. Open index.html in your browser
 #    (or use VS Code's "Live Server" extension for auto-reload)
