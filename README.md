@@ -60,10 +60,10 @@ filmterest/
 
 ## 📸 Screenshots
 
-<!-- TODO: Add screenshots of your app here, e.g.:
-![Home page](screenshots/home.png)
-![Movie wheel](screenshots/wheel.png)
--->
+<img width="1919" height="916" alt="image" src="https://github.com/user-attachments/assets/9200ce62-83bd-471c-888c-96aa8b741efc" />
+<img width="1919" height="908" alt="image" src="https://github.com/user-attachments/assets/97bdd412-1b91-422a-88d1-319585364798" />
+
+
 
 ## 📄 License
 
