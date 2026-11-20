@@ -14,6 +14,7 @@ let currentContentType = "all";  //"all", "movie" , "tv", "documentary"
 let currentGenreId = "all"; //"all" veya sayısal tür ID si örn aksiyon=28
 let currentGenreName = "all"; //seçilen türün adını (macera,aksiyon vb) aklında tutar
 let currentMovieId = null;
+let currentMediaType = "movie";
 let currentMovieData = null;
 let currentView = "home"; // "home", "savedMovies" veya "watchedMovies"
 let currentUserMovies = []; // Kullanıcının o an açık olan kayıtlı filmlerini saklar
@@ -143,7 +144,9 @@ function displayMovies(movies) {
             : (movie.vote_average || "N/A");
 
 
-        const typeBadge = (movie.name || movie.first_air_date) ? "Dizi" : "Film";
+        const isTv = movie.media_type === "tv" || movie.type === "tv" || Boolean(movie.name || movie.first_air_date) || (currentContentType === "tv");
+        const mediaType = isTv ? "tv" : "movie";
+        const typeBadge = isTv ? "Dizi" : "Film";
 
         // 4. Dinamik HTML Kart Şablonu 
         //Çift tırnak ile çok satırlı HTML kodu yazamazsın (hata verir).
@@ -151,7 +154,7 @@ function displayMovies(movies) {
         //Backtick sayesinde HTML kodunu birebir yazıp, aralarına ${deger} diyerek canlı veri enjekte edebiliriz!
         const movieCardHTML = `
             <div class="col"> 
-                <div class="card movie-card h-100 border-0 rounded-4 overflow-hidden shadow position-relative" style="cursor: pointer;" data-id="${movie.id}">
+                <div class="card movie-card h-100 border-0 rounded-4 overflow-hidden shadow position-relative" style="cursor: pointer;" data-id="${movie.id}" data-type="${mediaType}">
                                        <div class="position-relative">
                         <img src="${posterPath}" class="card-img-top movie-poster" alt="${movie.title}">
                         <span class="badge bg-warning text-dark position-absolute top-0 end-0 m-2 fw-bold">
@@ -364,23 +367,30 @@ document.getElementById("searchInput").addEventListener("input", (e) => {
 
 //Film kartlarından birine tıklanınca detayları göster
 document.getElementById("popularMoviesGrid").addEventListener("click", (e) => {
+    // Listeden kaldır veya puanlama butonuna tıklandıysa detay açma
+    if (e.target.closest(".delete-movie-btn") || e.target.closest("button")) return;
+
     const card = e.target.closest(".movie-card");
     if (!card) return; //Film kartına tıklanmadıysa işlem yapma
 
     const movieId = card.dataset.id;
-    showMovieDetails(movieId);
+    const mediaType = card.dataset.type || "movie";
+    showMovieDetails(movieId, mediaType);
 });
 
 
 //Tıklanan filmin detaylarını çeken fonksiyon
-async function showMovieDetails(movieId) {
+async function showMovieDetails(movieId, mediaType = "movie") {
     currentMovieId = movieId;
-    let response = await fetch(`${BASE_URL}/movie/${movieId}?api_key=${API_KEY}&language=tr-TR`);
+    currentMediaType = mediaType;
+    let endpoint = mediaType === "tv" ? "tv" : "movie";
+    let response = await fetch(`${BASE_URL}/${endpoint}/${movieId}?api_key=${API_KEY}&language=tr-TR`);
     let movie = await response.json();
 
-    //Eğer tıklanan içerik dizi ise dizi olarak tekrar çeker
+    //Eğer ilk sorguda bulunamadıysa alternatif türe bak
     if (movie.success === false) {
-        response = await fetch(`${BASE_URL}/tv/${movieId}?api_key=${API_KEY}&language=tr-TR`);
+        endpoint = endpoint === "tv" ? "movie" : "tv";
+        response = await fetch(`${BASE_URL}/${endpoint}/${movieId}?api_key=${API_KEY}&language=tr-TR`);
         movie = await response.json();
     }
 
@@ -420,7 +430,7 @@ async function showMovieDetails(movieId) {
 
 
     //Oyuncu kadrosunu çekip kutuyu temizliyoruz
-    const cast = await fetchCast(movieId);
+    const cast = await fetchCast(movieId, endpoint);
     const heroCast = document.getElementById("heroCast");
     heroCast.innerHTML = "";
 
@@ -473,21 +483,22 @@ window.addEventListener("popstate", () => {
 
 
 // TMDB'den Fragman linkini çeken fonksiyon
-async function fetchTrailer(movieId) {
+async function fetchTrailer(movieId, mediaType = "movie") {
     if (!movieId) return;
 
-    let response = await
-        fetch(`${BASE_URL}/movie/${movieId}/videos?api_key=${API_KEY}&language=en-US`);
+    let endpoint = mediaType === "tv" ? "tv" : "movie";
+    let response = await fetch(`${BASE_URL}/${endpoint}/${movieId}/videos?api_key=${API_KEY}&language=en-US`);
     let data = await response.json();
 
-    // Eğer Film fragmanı bulunamadıysa Dizi fragmanlarına bakar
+    // Eğer ilk sorguda fragman bulunamadıysa alternatif türe bakar
     if (!data.results || data.results.length === 0) {
-        response = await fetch(`${BASE_URL}/tv/${movieId}/videos?api_key=${API_KEY}&language=en-US`);
+        endpoint = endpoint === "tv" ? "movie" : "tv";
+        response = await fetch(`${BASE_URL}/${endpoint}/${movieId}/videos?api_key=${API_KEY}&language=en-US`);
         data = await response.json();
     }
 
     // YouTube üzerindeki "Trailer" (Fragman) tipindeki videoyu yakalar
-    const trailer = data.results.find(v => v.type === "Trailer" && v.site === "YouTube") || data.results[0];
+    const trailer = data.results?.find(v => v.type === "Trailer" && v.site === "YouTube") || data.results?.[0];
 
     if (trailer) {
         // Sitede video oynatmak yerine doğrudan resmi YouTube sayfasını yeni sekmede açar
@@ -495,30 +506,25 @@ async function fetchTrailer(movieId) {
     } else {
         alert("Üzgünüz, bu içerik için YouTube fragmanı bulunamadı.");
     }
-
-
-
-
 }
 
 // 10. "Fragmanı İzle" Butonuna Tıklanınca Fragmanı Aç
 document.getElementById("heroTrailerBtn").addEventListener("click", () => {
-    fetchTrailer(currentMovieId);
+    fetchTrailer(currentMovieId, currentMediaType || "movie");
 });
 
 
 
 // 9.5 TMDB'den Oyuncu Kadrosunu Çeken Fonksiyon
-async function fetchCast(movieId) {
-    let response = await fetch(`${BASE_URL}/movie/${movieId}/credits?api_key=${API_KEY}&language=tr-TR`);
+async function fetchCast(movieId, mediaType = "movie") {
+    let endpoint = mediaType === "tv" ? "tv" : "movie";
+    let response = await fetch(`${BASE_URL}/${endpoint}/${movieId}/credits?api_key=${API_KEY}&language=tr-TR`);
     let data = await response.json();
 
-
-
-    //Eğer film değil de dizi ise dizi oyuncularını çeker
+    //Eğer ilk sorguda bulunamazsa alternatif türe bakar
     if (!data.cast || data.cast.length === 0) {
-        response = await
-            fetch(`${BASE_URL}/tv/${movieId}/credits?api_key=${API_KEY}&language=tr-TR`);
+        endpoint = endpoint === "tv" ? "movie" : "tv";
+        response = await fetch(`${BASE_URL}/${endpoint}/${movieId}/credits?api_key=${API_KEY}&language=tr-TR`);
         data = await response.json();
     }
 
