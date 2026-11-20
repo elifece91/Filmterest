@@ -383,6 +383,17 @@ document.getElementById("popularMoviesGrid").addEventListener("click", (e) => {
 async function showMovieDetails(movieId, mediaType = "movie") {
     currentMovieId = movieId;
     currentMediaType = mediaType;
+
+    // Vitrini anında aç ve yükleniyor göster (önceki filmin bilgisi kalmasın)
+    const heroSection = document.getElementById("heroSection");
+    heroSection.classList.remove("d-none");
+    heroSection.scrollIntoView({ behavior: "smooth" });
+
+    document.getElementById("heroTitle").innerText = "Yükleniyor...";
+    document.getElementById("heroOverview").innerText = "İçerik bilgileri getiriliyor...";
+    document.getElementById("heroDetailsBar").innerHTML = `<span class="badge bg-secondary-purple fs-6 px-3 py-2"><i class="fa-solid fa-spinner fa-spin me-1"></i> Yükleniyor...</span>`;
+    document.getElementById("heroCast").innerHTML = `<div class="text-muted small py-2"><i class="fa-solid fa-spinner fa-spin me-1"></i> Oyuncular yükleniyor...</div>`;
+
     let endpoint = mediaType === "tv" ? "tv" : "movie";
     let response = await fetch(`${BASE_URL}/${endpoint}/${movieId}?api_key=${API_KEY}&language=tr-TR`);
     let movie = await response.json();
@@ -463,13 +474,6 @@ async function showMovieDetails(movieId, mediaType = "movie") {
             console.warn("Kayıt durumu kontrol edilemedi:", e);
         }
     }
-
-
-
-    // Vitrin alanının (Hero) d-none gizlilik kilidini açıp sayfayı en üste kaydır
-    const heroSection = document.getElementById("heroSection");
-    heroSection.classList.remove("d-none");
-    heroSection.scrollIntoView({ behavior: "smooth" });
 
 
 
