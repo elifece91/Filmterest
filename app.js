@@ -1176,9 +1176,16 @@ async function showMyFollowsList(type = "followers") {
 
     // Liste kartlarında isim ve avatar gösterebilmek için tüm kullanıcıları çek
     if (allCommunityUsers.length === 0) {
-        const snap = await db.collection("users").get();
-        allCommunityUsers = [];
-        snap.forEach(d => allCommunityUsers.push({ uid: d.id, ...d.data() }));
+        try {
+            const snap = await db.collection("users").get();
+            allCommunityUsers = [];
+            snap.forEach(d => allCommunityUsers.push({ uid: d.id, ...d.data() }));
+        } catch (err) {
+            console.warn("Kullanıcılar çekilemedi:", err);
+        }
+    }
+    if (typeof syncFollowersFromFollowing === "function") {
+        syncFollowersFromFollowing();
     }
 
     const followersCountSpan = document.getElementById("myFollowersTabCount");
@@ -1412,8 +1419,25 @@ async function loadUserProfileData() {
         if (statWatched) statWatched.innerText = watchedSnap.size;
 
         // Sosyal Takip İstatistikleri (Takipçi ve Takip Edilen)
-        const followersCount = userData.followers ? (Array.isArray(userData.followers) ? userData.followers.length : userData.followers) : 0;
-        const followingCount = userData.following ? (Array.isArray(userData.following) ? userData.following.length : userData.following) : 0;
+        if (allCommunityUsers.length === 0) {
+            try {
+                const snap = await db.collection("users").get();
+                allCommunityUsers = [];
+                snap.forEach(d => allCommunityUsers.push({ uid: d.id, ...d.data() }));
+                if (typeof syncFollowersFromFollowing === "function") syncFollowersFromFollowing();
+            } catch (e) {
+                console.warn("Topluluk senkronize edilemedi:", e);
+            }
+        } else if (typeof syncFollowersFromFollowing === "function") {
+            syncFollowersFromFollowing();
+        }
+
+        const followersCount = currentUserFollowers.length > 0 
+            ? currentUserFollowers.length 
+            : (userData.followers ? (Array.isArray(userData.followers) ? userData.followers.length : userData.followers) : 0);
+        const followingCount = currentUserFollowing.length > 0 
+            ? currentUserFollowing.length 
+            : (userData.following ? (Array.isArray(userData.following) ? userData.following.length : userData.following) : 0);
 
         const statFollowers = document.getElementById("statFollowersCount");
         const statFollowing = document.getElementById("statFollowingCount");
@@ -1667,6 +1691,36 @@ let currentUserFollowing = [];     // Bizim takip ettiğimiz kişilerin UID list
 let currentUserFollowers = [];     // Bizi takip eden kişilerin UID listesi
 let currentCommunityTab = "all";   // "all", "followers" veya "following"
 
+// Tüm kullanıcıların takipçilerini 'following' verilerinden otomatik ve dinamik olarak türetir
+function syncFollowersFromFollowing() {
+    const followerMap = {};
+    allCommunityUsers.forEach(u => {
+        followerMap[u.uid] = new Set(Array.isArray(u.followers) ? u.followers : []);
+    });
+
+    allCommunityUsers.forEach(u => {
+        const following = Array.isArray(u.following) ? u.following : [];
+        following.forEach(targetId => {
+            if (!followerMap[targetId]) {
+                followerMap[targetId] = new Set();
+            }
+            followerMap[targetId].add(u.uid);
+        });
+    });
+
+    allCommunityUsers.forEach(u => {
+        u.followers = Array.from(followerMap[u.uid] || []);
+    });
+
+    if (currentUser) {
+        currentUserFollowers = Array.from(followerMap[currentUser.uid] || []);
+        const statFollowers = document.getElementById("statFollowersCount");
+        if (statFollowers) statFollowers.innerText = currentUserFollowers.length;
+        const followersCountSpan = document.getElementById("myFollowersTabCount");
+        if (followersCountSpan) followersCountSpan.innerText = currentUserFollowers.length;
+    }
+}
+
 // Menüdeki "Topluluk" Linkine Tıklanınca Pencereyi Aç
 const communityLink = document.getElementById("communityLink");
 if (communityLink) {
@@ -1704,6 +1758,9 @@ async function loadCommunityUsers() {
                 ...doc.data()
             });
         });
+
+        // Takipçi listelerini eksiksiz senkronize et
+        syncFollowersFromFollowing();
 
         // Kullanıcıları ekrana çiz
         filterAndRenderCommunity();
@@ -1818,22 +1875,63 @@ window.toggleFollowUser = async function (targetUid) {
         if (isFollowing) {
             // Takipten Çık
             await myRef.set({ following: firebase.firestore.FieldValue.arrayRemove(targetUid) }, { merge: true });
-            await targetRef.set({ followers: firebase.firestore.FieldValue.arrayRemove(currentUser.uid) }, { merge: true });
+            try {
+                await targetRef.set({ followers: firebase.firestore.FieldValue.arrayRemove(currentUser.uid) }, { merge: true });
+            } catch (targetErr) {
+                console.warn("Hedef kullanıcının followers alanı doğrudan güncellenemedi (Firestore kuralı):", targetErr);
+            }
             currentUserFollowing = currentUserFollowing.filter(id => id !== targetUid);
         } else {
             // Takip Et
             await myRef.set({ following: firebase.firestore.FieldValue.arrayUnion(targetUid) }, { merge: true });
-            await targetRef.set({ followers: firebase.firestore.FieldValue.arrayUnion(currentUser.uid) }, { merge: true });
+            try {
+                await targetRef.set({ followers: firebase.firestore.FieldValue.arrayUnion(currentUser.uid) }, { merge: true });
+            } catch (targetErr) {
+                console.warn("Hedef kullanıcının followers alanı doğrudan güncellenemedi (Firestore kuralı):", targetErr);
+            }
             currentUserFollowing.push(targetUid);
         }
 
         // Kendi profilimizdeki Takip Edilen sayısını anında güncelle
         const followingStat = document.getElementById("statFollowingCount");
         if (followingStat) followingStat.innerText = currentUserFollowing.length;
+        const myFollowingTabCount = document.getElementById("myFollowingTabCount");
+        if (myFollowingTabCount) myFollowingTabCount.innerText = currentUserFollowing.length;
 
-        // Listeyi yenile
-        loadCommunityUsers();
+        // Önbellekteki kullanıcıları anında güncelle
+        const myUserInCache = allCommunityUsers.find(u => u.uid === currentUser.uid);
+        if (myUserInCache) {
+            myUserInCache.following = [...currentUserFollowing];
+        }
+
+        const targetUserInCache = allCommunityUsers.find(u => u.uid === targetUid);
+        if (targetUserInCache) {
+            if (!Array.isArray(targetUserInCache.followers)) targetUserInCache.followers = [];
+            if (isFollowing) {
+                targetUserInCache.followers = targetUserInCache.followers.filter(id => id !== currentUser.uid);
+            } else {
+                if (!targetUserInCache.followers.includes(currentUser.uid)) {
+                    targetUserInCache.followers.push(currentUser.uid);
+                }
+            }
+        }
+
+        // Listeyi anında yenile
+        filterAndRenderCommunity();
+
+        // Eğer arkadaş profili açıksa oradaki buton ve takipçi sayısını da güncelle
+        if (currentFriendData && currentFriendData.uid === targetUid) {
+            currentFriendData.followers = targetUserInCache ? targetUserInCache.followers : [];
+            const friendStat = document.getElementById("friendStatFollowers");
+            if (friendStat) friendStat.innerText = currentFriendData.followers.length;
+        }
+
+        // Kendi takipçi / takip edilen listesi modalı açıksa yenile
+        if (document.getElementById("myFollowsModal")?.classList.contains("show")) {
+            showMyFollowsList(currentMyFollowsTab);
+        }
     } catch (err) {
+        console.error("Takip işlemi hatası:", err);
         alert("Takip işlemi sırasında hata oluştu: " + err.message);
     }
 };
@@ -1861,6 +1959,15 @@ window.viewFriendProfile = async function (friendUid) {
         // 1. Arkadaşın temel profil bilgilerini çek
         const userDoc = await db.collection("users").doc(friendUid).get();
         currentFriendData = { uid: friendUid, ...(userDoc.exists ? userDoc.data() : {}) };
+
+        // Önbellekteki güncel takipçi verisini kullan
+        const cachedFriend = allCommunityUsers.find(u => u.uid === friendUid);
+        if (cachedFriend && Array.isArray(cachedFriend.followers)) {
+            currentFriendData.followers = cachedFriend.followers;
+        } else {
+            const dynamicFollowers = allCommunityUsers.filter(u => Array.isArray(u.following) && u.following.includes(friendUid)).map(u => u.uid);
+            currentFriendData.followers = Array.from(new Set([...(currentFriendData.followers || []), ...dynamicFollowers]));
+        }
 
         const name = currentFriendData.username || "Kullanıcı";
         const avatar = currentFriendData.avatar || defaultAvatars[0];
@@ -2117,11 +2224,16 @@ window.toggleFollowFriend = async function (friendUid) {
         `;
     }
 
-    // Arkadaşın takipçi sayısını ekranda anında 1 artır veya azalt
+    // Arkadaşın takipçi sayısını ekranda anında güncelle
     const statFollowers = document.getElementById("friendStatFollowers");
     if (statFollowers) {
-        const currentCount = parseInt(statFollowers.innerText) || 0;
-        statFollowers.innerText = isFollowing ? (currentCount + 1) : Math.max(0, currentCount - 1);
+        const cachedFriend = allCommunityUsers.find(u => u.uid === friendUid);
+        if (cachedFriend && Array.isArray(cachedFriend.followers)) {
+            statFollowers.innerText = cachedFriend.followers.length;
+        } else {
+            const currentCount = parseInt(statFollowers.innerText) || 0;
+            statFollowers.innerText = isFollowing ? (currentCount + 1) : Math.max(0, currentCount - 1);
+        }
     }
 };
 
